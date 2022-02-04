@@ -1,3 +1,4 @@
+const fs = require('fs');
 const { ApolloServer, gql } = require('apollo-server-express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
@@ -19,16 +20,12 @@ app.use(
   })
 );
 
-const typeDefs = gql`
-  # TODO
-`;
-
-const resolvers = {
-  // TODO
-};
-
+// START: Adding graphql support to express application
+const typeDefs = gql(fs.readFileSync('./schema.graphql', { encoding: 'utf8' }));
+const resolvers = require('./resolvers');
 const apolloServer = new ApolloServer({ typeDefs, resolvers });
 apolloServer.applyMiddleware({ app, path: '/graphql' }); // we are passing the express app
+// END: Adding graphql support to express application
 
 app.post('/login', (req, res) => {
   const { email, password } = req.body;
